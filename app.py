@@ -78,6 +78,7 @@ USER_CREDENTIALS = {
 
 st.set_page_config(page_title="Home Expense Tracker", page_icon="📊", layout="wide")
 
+# Version: 2.1 - User Comparison Update
 # Custom CSS for better styling
 st.markdown("""
     <style>
