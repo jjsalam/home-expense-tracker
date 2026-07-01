@@ -232,6 +232,18 @@ else:
         
         st.markdown("---")
         
+        # NEW: User comparison
+        st.subheader("👥 User Comparison")
+        user_category = filtered_df.groupby(['added_by', 'category'])['amount'].sum().reset_index()
+        user_pivot = user_category.pivot(index='category', columns='added_by', values='amount').fillna(0)
+        
+        if not user_pivot.empty:
+            st.bar_chart(user_pivot)
+            st.write("**Detailed breakdown:**")
+            st.dataframe(user_pivot)
+        
+        st.markdown("---")
+        
         # FEATURE 4: Budget alerts
         st.subheader("💡 Budget Status")
         budgets_df = get_budgets()
@@ -256,6 +268,15 @@ else:
         
         # FEATURE 1: Edit/Delete expenses
         st.subheader("📋 Transactions")
+        
+        # Show user summary at top
+        if not filtered_df.empty:
+            st.write("**Expenses by User:**")
+            user_summary = filtered_df.groupby('added_by')['amount'].agg(['sum', 'count']).round(2)
+            user_summary.columns = ['Total (₹)', 'Count']
+            st.dataframe(user_summary)
+            st.markdown("---")
+        
         col_tab1, col_tab2, col_tab3 = st.columns([2, 1, 1])
         
         with col_tab1:
@@ -265,8 +286,8 @@ else:
             for idx, row in display_df.iterrows():
                 col_exp1, col_exp2, col_exp3 = st.columns([3, 1, 1])
                 with col_exp1:
-                    st.write(f"📍 **{row['category']}** - ₹{row['amount']:.2f} | {row['date'].strftime('%Y-%m-%d')} | {row['description']}")
-                    st.write(f"   *Added by: {row['added_by']}*")
+                    st.write(f"👤 **{row['added_by'].upper()}** | 📍 **{row['category']}** - ₹{row['amount']:.2f} | {row['date'].strftime('%Y-%m-%d')}")
+                    st.write(f"   Description: {row['description'] if row['description'] else 'N/A'}")
                 
                 with col_exp2:
                     if st.button("✏️ Edit", key=f"edit_{row['id']}"):
